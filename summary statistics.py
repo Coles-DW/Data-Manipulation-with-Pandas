@@ -63,3 +63,56 @@ sales_1_1["cum_max_sales"] = sales_1_1["weekly_sales"].cummax()
 
 # See the columns you calculated
 print(sales_1_1[["date", "weekly_sales", "cum_weekly_sales", "cum_max_sales"]])
+
+## Dropping duplicates
+Removing duplicates is an essential skill to get accurate counts because often, you don't want to count the same thing multiple times. 
+In this exercise, you'll create some new DataFrames using unique values from sales.
+
+sales is available and pandas is imported as pd.
+
+# Drop duplicate store/type combinations
+store_types = sales.drop_duplicates(subset=["store", "type"])
+print(store_types.head())
+
+# Drop duplicate store/department combinations
+store_depts = sales.drop_duplicates(subset=["store", "department"])
+print(store_depts.head())
+
+# Subset the rows where is_holiday is True and drop duplicate dates
+holiday_dates = sales[sales["is_holiday"]].drop_duplicates(subset="date")
+
+# Print date col of holiday_dates
+print(holiday_dates["date"])
+
+## Counting categorical variables
+Counting is a great way to get an overview of your data and to spot curiosities that you might not notice otherwise. In this exercise, you'll count the number of each type of store and the number of each department number using the DataFrames you created in the previous exercise:
+
+# Drop duplicate store/type combinations
+store_types = sales.drop_duplicates(subset=["store", "type"])
+
+# Drop duplicate store/department combinations
+store_depts = sales.drop_duplicates(subset=["store", "department"])
+The store_types and store_depts DataFrames you created in the last exercise are available, and pandas is imported as pd.
+
+# Count the number of stores of each type
+store_counts = store_types["type"].value_counts()
+print(store_counts)
+
+# Get the proportion of stores of each type
+store_props = store_types["type"].value_counts(normalize=True)
+print(store_props)
+
+# Count the number of stores for each department and sort
+dept_counts_sorted = store_depts["department"].value_counts(sort=True)
+print(dept_counts_sorted)
+
+# Get the proportion of stores in each department and sort
+dept_props_sorted = store_depts["department"].value_counts(sort=True, normalize=True)
+print(dept_props_sorted)
+
+## What percent of sales occurred at each store type?
+While .groupby() is useful, you can calculate grouped summary statistics without it.
+
+Walmart distinguishes three types of stores: "supercenters," "discount stores," and "neighborhood markets," encoded in this dataset as type "A," "B," and "C." In this exercise, you'll calculate the total sales made at each store type, without using .groupby(). You can then use these numbers to see what proportion of Walmart's total sales were made at each type.
+
+sales is available and pandas is imported as pd.
