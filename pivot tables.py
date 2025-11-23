@@ -32,10 +32,17 @@ fill_value replaces missing values with a real value (known as imputation). What
 margins is a shortcut for when you pivoted by two variables, but also wanted to pivot by each of those variables separately: it gives the row and column totals of the pivot table contents.
 In this exercise, you'll practice using these arguments to up your pivot table skills, which will help you crunch numbers more efficiently!
 
-sales is available and pandas is imported as pd.
+print(temp_by_country_city_vs_year.head())
 
-# Print mean weekly_sales by department and type; fill missing values with 0
-print(sales.pivot_table(values="weekly_sales", index="department", columns="type", fill_value=0))
+# Get the worldwide mean temp by year
+mean_temp_by_year = temp_by_country_city_vs_year.mean(axis="index")
 
-# Print the mean weekly_sales by department and type; fill missing values with 0s; sum all rows and cols
-print(sales.pivot_table(values="weekly_sales", index="department", columns="type", fill_value=0, margins=True))
+# Filter for the year that had the highest mean temp
+print(mean_temp_by_year[mean_temp_by_year == mean_temp_by_year.max()
+])
+
+# Get the mean temp by city
+mean_temp_by_city = temp_by_country_city_vs_year.mean(axis="columns")
+
+# Filter for the city that had the lowest mean temp
+print(mean_temp_by_city[mean_temp_by_city == mean_temp_by_city.min()])
