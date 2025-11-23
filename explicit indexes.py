@@ -142,3 +142,44 @@ print(temperatures.iloc[:, 2:4])
 
 # Use slicing in both directions at once
 print(temperatures.iloc[0:6, 2:4])
+
+print(temperatures.head())
+
+# Add a year column to temperatures
+temperatures["year"] = temperatures["date"].dt.year
+
+# Pivot avg_temp_c by country and city vs year
+temp_by_country_city_vs_year = temperatures.pivot_table("avg_temp_c", index=["country", "city"], columns="year")
+
+# See the result
+print(temp_by_country_city_vs_year)
+
+# Subset for Egypt to India
+temp_by_country_city_vs_year.loc["Egypt":"India"]
+
+# Subset for Egypt, Cairo to India, Delhi
+temp_by_country_city_vs_year.loc[("Egypt", "Cairo"):("India", "Delhi")]
+
+# Subset for Egypt, Cairo to India, Delhi, and 2005 to 2010
+temp_by_country_city_vs_year.loc[("Egypt", "Cairo"):("India", "Delhi"), 2005:2010]
+
+Calculating on a pivot table
+Pivot tables are filled with summary statistics, but they are only a first step to finding something insightful. Often you'll need to perform further calculations on them. A common thing to do is to find the rows or columns where the highest or lowest value occurs.
+
+Recall from Chapter 1 that you can easily subset a Series or DataFrame to find rows of interest using a logical condition inside of square brackets. For example: series[series > value].
+
+pandas is loaded as pd and the DataFrame temp_by_country_city_vs_year is available. The .head() for this DataFrame is shown below, with only a few of the year columns displayed:
+
+Calculating on a pivot table
+Pivot tables are filled with summary statistics, but they are only a first step to finding something insightful. Often you'll need to perform further calculations on them. A common thing to do is to find the rows or columns where the highest or lowest value occurs.
+
+Recall from Chapter 1 that you can easily subset a Series or DataFrame to find rows of interest using a logical condition inside of square brackets. For example: series[series > value].
+
+pandas is loaded as pd and the DataFrame temp_by_country_city_vs_year is available. The .head() for this DataFrame is shown below, with only a few of the year columns displayed:
+
+country	city	2000	2001	2002	…	2013
+Afghanistan	Kabul	15.823	15.848	15.715	…	16.206
+Angola	Luanda	24.410	24.427	24.791	…	24.554
+Australia	Melbourne	14.320	14.180	14.076	…	14.742
+Sydney	17.567	17.854	17.734	…	18.090
+Bangladesh	span translate="no">Dhaka	25.905	25.931	26.095	…	26.587
