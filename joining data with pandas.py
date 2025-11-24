@@ -129,3 +129,44 @@ print(licenses_zip_ward.head())
 
 # Print the results by alderman and show median income
 print(licenses_zip_ward.groupby("alderman").agg({'income':'median'}))
+
+One-to-many merge with multiple tables
+In this exercise, assume that you are looking to start a business in the city of Chicago. Your perfect idea is to start a company that uses goats to mow the lawn for other businesses. However, you have to choose a location in the city to put your goat farm. You need a location with a great deal of space and relatively few businesses and people around to avoid complaints about the smell. You will need to merge three tables to help you choose your location. The land_use table has info on the percentage of vacant land by city ward. The census table has population by ward, and the licenses table lists businesses by ward.
+
+The land_use, census, and licenses tables have been loaded for you.
+
+land_use.head()
+census.head()
+licenses.head()
+
+# Merge land_use and census and merge result with licenses including suffixes
+land_cen = land_use.merge(census, on='ward')
+land_cen_lic = land_cen.merge(licenses, on='ward', suffixes = ('_cen', '_lic'))
+
+print(land_cen_lic.head())
+
+# Merge land_use and census and merge result with licenses including suffixes
+land_cen_lic = land_use.merge(census, on='ward') \
+                    .merge(licenses, on='ward', suffixes=('_cen','_lic'))
+
+# Group by ward, pop_2010, and vacant, then count the # of accounts
+pop_vac_lic = land_cen_lic.groupby([ "ward", "pop_2010","vacant"], 
+                                   as_index=False).agg({'account':'count'})
+print(pop_vac_lic.head())
+
+# Merge land_use and census and merge result with licenses including suffixes
+land_cen_lic = land_use.merge(census, on='ward') \
+                    .merge(licenses, on='ward', suffixes=('_cen','_lic'))
+
+# Group by ward, pop_2010, and vacant, then count the # of accounts
+pop_vac_lic = land_cen_lic.groupby(['ward','pop_2010','vacant'], 
+                                   as_index=False).agg({'account':'count'})
+
+# Sort pop_vac_lic and print the results
+sorted_pop_vac_lic = pop_vac_lic.sort_values(["vacant", "account", "pop_2010"], 
+                                             ascending= [False, True, True])
+
+# Print the top few rows of sorted_pop_vac_lic
+print(sorted_pop_vac_lic.head())
+
+You merged multiple tables with varying relationships and added suffixes to make your column names clearer. Using your skills, you were able to pull together information from different tables to see that the 7th ward would be a good place to build your goat farm!
