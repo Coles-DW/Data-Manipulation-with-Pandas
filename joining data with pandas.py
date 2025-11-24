@@ -258,3 +258,106 @@ print(movies_and_scifi_only.head())
 print(movies_and_scifi_only.shape)
 
 you found over 250 action only movies by merging action_movies and scifi_movies using a right join. With this, you were able to find the rows not found in the action_movies table. Additionally, you used the left_on and right_on arguments to merge in the movies table. 
+
+
+Popular genres with right join
+What are the genres of the most popular movies? To answer this question, you need to merge data from the movies and movie_to_genres tables. In a table called pop_movies, the top 10 most popular movies in the movies table have been selected. To ensure that you are analyzing all of the popular movies, merge it with the movie_to_genres table using a right join. To complete your analysis, count the number of different genres. Also, the two tables can be merged by the movie ID. However, in pop_movies that column is called id, and in movie_to_genres it's called movie_id.
+
+The pop_movies and movie_to_genres tables have been loaded for you.
+
+# Use right join to merge the movie_to_genres and pop_movies tables
+genres_movies = movie_to_genres.merge(pop_movies, how='right', 
+                                      left_on='movie_id', 
+                                      right_on='id')
+
+print(genres_movies.head())
+
+# Count the number of genres
+genre_count = genres_movies.groupby('genre').agg({'id':'count'})
+
+# Plot a bar chart of the genre_count
+genre_count.plot(kind='bar')
+plt.show()
+
+Using outer join to select actors
+One cool aspect of using an outer join is that, because it returns all rows from both merged tables and null where they do not match, you can use it to find rows that do not have a match in the other table. To try for yourself, you have been given two tables with a list of actors from two popular movies: Iron Man 1 and Iron Man 2. Most of the actors played in both movies. Use an outer join to find actors who did not act in both movies.
+
+The Iron Man 1 table is called iron_1_actors, and Iron Man 2 table is called iron_2_actors. Both tables have been loaded for you and a few rows printed so you can see the structure.
+
+Venn graph with no overlap
+
+# Merge iron_1_actors to iron_2_actors on id with outer join using suffixes
+iron_1_and_2 = iron_1_actors.merge(iron_2_actors,
+                                     on='id',
+                                     how='outer',
+                                     suffixes=['_1','_2'])
+
+print(iron_1_and_2.head())
+
+# Create an index that returns true if name_1 or name_2 are null
+m = ((iron_1_and_2['name_1'].isnull()) | 
+     (iron_1_and_2['name_2'].isnull()))
+
+# Print the first few rows of iron_1_and_2
+print(iron_1_and_2[m].head())
+
+Self join
+Merging a table to itself can be useful when you want to compare values in a column to other values in the same column. In this exercise, you will practice this by creating a table that for each movie will list the movie director and a member of the crew on one row. You have been given a table called crews, which has columns id, job, and name. First, merge the table to itself using the movie ID. This merge will give you a larger table where for each movie, every job is matched against each other. Then select only those rows with a director in the left table, and avoid having a row where the director's job is listed in both the left and right tables. This filtering will remove job combinations that aren't with the director.
+
+The crews table has been loaded for you.
+
+# Merge the crews table to itself
+crews_self_merged = crews.merge(crews, on='id', suffixes=['_dir', '_crew'])
+
+print(crews_self_merged.head())
+
+# Merge the crews table to itself
+crews_self_merged = crews.merge(crews, on='id', how='inner',
+                                suffixes=('_dir','_crew'))
+
+# Create a Boolean index to select the appropriate
+boolean_filter = ((crews_self_merged['job_dir'] == 'Director') & 
+     (crews_self_merged['job_crew'] != 'Director'))
+direct_crews = crews_self_merged[boolean_filter]
+
+# Print the first few rows of direct_crews
+print(direct_crews.head())
+
+By merging the table to itself, you compared the value of the __director__ from the jobs column to other values from the jobs column. With the output, you can quickly see different movie directors and the people they worked with in the same movie.
+
+Index merge for movie ratings
+To practice merging on indexes, you will merge movies and a table called ratings that holds info about movie ratings. Ensure that your merge returns all rows from the movies table, and only matching rows from the ratings table.
+
+The movies and ratings tables have been loaded for you.
+
+# Merge to the movies table the ratings table on the index
+movies_ratings = movies.merge(ratings, on='id')
+
+# Print the first few rows of movies_ratings
+print(movies_ratings.head())
+
+Merging on indexes is just like merging on columns, so if you need to merge based on indexes, there's no need to turn the indexes into columns first.
+
+Do sequels earn more?
+It is time to put together many of the aspects that you have learned in this chapter. In this exercise, you'll find out which movie sequels earned the most compared to the original movie. To answer this question, you will merge a modified version of the sequels and financials tables where their index is the movie ID. You will need to choose a merge type that will return all of the rows from the sequels table and not all the rows of financials table need to be included in the result. From there, you will join the resulting table to itself so that you can compare the revenue values of the original movie to the sequel. Next, you will calculate the difference between the two revenues and sort the resulting dataset.
+
+The sequels and financials tables have been provided.
+
+# Merge sequels and financials on index id
+sequels_fin = sequels.merge(financials, on='id', how='left')
+
+# Self merge with suffixes as inner join with left on sequel and right on id
+orig_seq = sequels_fin.merge(sequels_fin, how='inner', left_on='sequel', 
+                             right_on='id', right_index=True,
+                             suffixes=['_org','_seq'])
+
+# Add calculation to subtract revenue_org from revenue_seq 
+orig_seq['diff'] = orig_seq['revenue_seq'] - orig_seq['revenue_org']
+
+# Select the title_org, title_seq, and diff 
+titles_diff = (orig_seq[["title_org", "title_seq", "diff"]])
+
+# Print the first rows of the sorted titles_diff
+print(titles_diff.sort_values(by='diff', ascending=False).head())
+
+To complete this exercise, you needed to merge tables on their index and merge another table to itself. After the calculations were added and sub-select specific columns, the data was sorted. You found out that Jurassic World had one of the highest of all, improvement in revenue compared to the original movie.
