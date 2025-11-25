@@ -573,3 +573,8 @@ price_diffs.plot(y=['close_jpm', 'close_wells', 'close_bac'])
 plt.show()
 
 The critical point here is that the merge_asof() function is very useful in performing the fuzzy matching between the timestamps of all the tables.
+
+Using merge_asof() to create dataset
+The merge_asof() function can be used to create datasets where you have a table of start and stop dates, and you want to use them to create a flag in another table. You have been given gdp, which is a table of quarterly GDP values of the US during the 1980s. Additionally, the table recession has been given to you. It holds the starting date of every US recession since 1980, and the date when the recession was declared to be over. Use merge_asof() to merge the tables and create a status flag if a quarter was during a recession. Finally, to check your work, plot the data in a bar chart.
+
+The tables gdp and recession have been loaded for you.
