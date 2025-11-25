@@ -361,3 +361,73 @@ titles_diff = (orig_seq[["title_org", "title_seq", "diff"]])
 print(titles_diff.sort_values(by='diff', ascending=False).head())
 
 To complete this exercise, you needed to merge tables on their index and merge another table to itself. After the calculations were added and sub-select specific columns, the data was sorted. You found out that Jurassic World had one of the highest of all, improvement in revenue compared to the original movie.
+
+In the last video, you were shown how to perform a semi join with pandas. In this exercise, you'll solidify your understanding of the necessary steps. Recall that a semi join filters the left table to only the rows where a match exists in both the left and right tables.
+
+Performing an anti join
+In our music streaming company dataset, each customer is assigned an employee representative to assist them. In this exercise, filter the employee table by a table of top customers, returning only those employees who are not assigned to a customer. The results should resemble the results of an anti join. The company's leadership will assign these employees additional training so that they can work with high valued customers.
+
+The top_cust and employees tables have been provided for you.
+
+# Merge employees and top_cust
+empl_cust = employees.merge(top_cust, on='srid', 
+                                 how='left', indicator=True)
+
+# Select the srid column where _merge is left_only
+srid_list = empl_cust.loc[empl_cust['_merge'] == 'left_only', 'srid']
+
+# Get employees not working with top customers
+print(employees[employees['srid'].isin(srid_list)])
+
+Success! You performed an anti join by first merging the tables with a left join, selecting the ID of those employees who did not support a top customer, and then subsetting the original employee's table. From that, we can see that there are five employees not supporting top customers. Anti joins are a powerful tool to filter a main table (i.e. employees) by another (i.e. customers).
+
+Performing a semi join
+Some of the tracks that have generated the most significant amount of revenue are from TV-shows or are other non-musical audio. You have been given a table of invoices that include top revenue-generating items. Additionally, you have a table of non-musical tracks from the streaming service. In this exercise, you'll use a semi join to find the top revenue-generating non-musical tracks.
+
+The tables non_mus_tcks, top_invoices, and genres have been loaded for you.
+
+non_mus_tcks.head()
+top_invoices.head()
+
+# Merge the non_mus_tcks and top_invoices tables on tid
+tracks_invoices = non_mus_tcks.merge(top_invoices, on='tid')
+
+print(tracks_invoices.head())
+
+# Use .isin() to subset non_mus_tcks to rows with tid in tracks_invoices
+top_tracks = non_mus_tcks[non_mus_tcks['tid'].isin(tracks_invoices['tid'])]
+
+print(top_tracks.head())
+
+# Group the top_tracks by gid and count the tid rows
+cnt_by_gid = top_tracks.groupby(['gid'], as_index=False).agg({'tid':'count'})
+
+print(cnt_by_gid.head())
+
+# Merge the genres table to cnt_by_gid on gid and print
+print(cnt_by_gid.merge(genres, on='gid'))
+
+Concatenation basics
+You have been given a few tables of data with musical track info for different albums from the metal band, Metallica. The track info comes from their Ride The Lightning, Master Of Puppets, and St. Anger albums. Try various features of the .concat() method by concatenating the tables vertically together in different ways.
+
+The tables tracks_master, tracks_ride, and tracks_st have loaded for you.
+
+# Concatenate the tracks
+tracks_from_albums = pd.concat([tracks_master, tracks_ride, tracks_st],
+                               sort=True)
+print(tracks_from_albums)
+
+# Concatenate the tracks so the index goes from 0 to n-1
+tracks_from_albums = pd.concat([tracks_master, tracks_ride, tracks_st],
+                               ignore_index=True,
+                               sort=True)
+print(tracks_from_albums)
+
+# Concatenate the tracks, show only columns names that are in all tables
+tracks_from_albums = pd.concat([tracks_master, tracks_ride, tracks_st],
+                               join='inner',
+                               sort=True)
+print(tracks_from_albums)
+
+Concatenating with keys
+The leadership of the music streaming company has come to you and asked you for assistance in analyzing sales for a recent business quarter. They would like to know which month in the quarter saw the highest average invoice total. You have been given three tables with invoice data named inv_jul, inv_aug, and inv_sep. Concatenate these tables into one to create a graph of the average monthly invoice total.
