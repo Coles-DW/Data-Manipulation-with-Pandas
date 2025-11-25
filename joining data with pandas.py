@@ -578,3 +578,66 @@ Using merge_asof() to create dataset
 The merge_asof() function can be used to create datasets where you have a table of start and stop dates, and you want to use them to create a flag in another table. You have been given gdp, which is a table of quarterly GDP values of the US during the 1980s. Additionally, the table recession has been given to you. It holds the starting date of every US recession since 1980, and the date when the recession was declared to be over. Use merge_asof() to merge the tables and create a status flag if a quarter was during a recession. Finally, to check your work, plot the data in a bar chart.
 
 The tables gdp and recession have been loaded for you.
+
+gdp.head()
+recession.head()
+
+# Merge gdp and recession on date using merge_asof()
+gdp_recession = pd.merge_asof(gdp, recession, on='date')
+
+print(gdp_recession.head())
+
+# Create a list based on the row value of gdp_recession['econ_status']
+is_recession = ['r' if s=='recession' else 'g' for s in gdp_recession['econ_status']]
+
+# Plot a bar chart of gdp_recession
+gdp_recession.plot(kind='bar', y='gdp', x='date', color=is_recession, rot=90)
+plt.show()
+
+You can see from the chart that there were a number of quarters early in the 1980s where a recession was an issue. merge_asof() allowed you to quickly add a flag to the gdp dataset by matching between two different dates, in one line of code! If you were to perform the same task using subsetting, it would have taken a lot more code.
+
+Explore financials with .query()
+You have been given a table of financial data from some popular social network companies called social_fin. All of the values are in thousands of US dollars.
+
+Use the .query() method to explore social_fin and select the True statement.
+
+social_fin.head()
+
+social_fin.query('value >= 50000000')
+
+social_fin.query('company == "facebook" and financial == "total_revenue"')
+
+social_fin.query('value < 0 and financial == "net_income"')
+
+social_fin.query('value >= 100000 and financial == "gross_profit"')
+
+There 2 rows where the value is greater than $50,000,000K.
+
+There are 3 rows for total revenue for Facebook.
+
+There are 6 rows where the net income has a negative value. >> Correct answer!
+
+There are 45 rows, where the gross profit is greater than $100K.
+
+Subsetting rows with .query()
+In this exercise, you will revisit GDP and population data for Australia and Sweden from the World Bank and expand on it using the .query() method. You'll merge the two tables and compute the GDP per capita. Afterwards, you'll use the .query() method to sub-select the rows and create a plot. Recall that you will need to merge on multiple columns in the proper order.
+
+The tables gdp and pop have been loaded for you.
+
+# Merge gdp and pop on date and country with fill
+gdp_pop = pd.merge_ordered(gdp, pop, on=['country','date'], fill_method='ffill')
+
+# Add a column named gdp_per_capita to gdp_pop that divides the gdp by pop
+gdp_pop['gdp_per_capita'] = gdp_pop['gdp'] / gdp_pop['pop']
+
+# Pivot data so gdp_per_capita, where index is date and columns is country
+gdp_pivot = gdp_pop.pivot_table('gdp_per_capita', 'date', 'country')
+
+# Select dates equal to or greater than 1991-01-01
+recent_gdp_pop = gdp_pivot.query('date >= "1991-01-01"')
+
+# Plot recent_gdp_pop
+recent_gdp_pop.plot(rot=90)
+plt.show()
+
+You can see from the plot that the per capita GDP of Australia passed Sweden in 1992. By using the .query() method, you were able to select the appropriate rows easily. The .query() method is easy to read and straightforward.
