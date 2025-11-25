@@ -505,3 +505,71 @@ gdp_returns = gdp_sp500.loc[:, ['gdp', 'returns']]
 print(gdp_returns.corr())
 
 By using this function, you were able to fill in the missing data from 2019. Finally, the correlation of 0.21 between the GDP and S&P500 is low to moderate at best. You may want to find another predictor if you plan to play in the stock market.
+
+unemployment.head()
+inflation.head()
+
+# Use merge_ordered() to merge inflation, unemployment with inner join
+inflation_unemploy = pd.merge_ordered(inflation, unemployment, on='date', how= 'inner')
+
+# Print inflation_unemploy 
+print(inflation_unemploy)
+
+# Plot a scatter plot of unemployment_rate vs cpi of inflation_unemploy
+inflation_unemploy.plot(x="unemployment_rate", y="cpi", kind="scatter", title="unemployment rate vs. cpi")
+
+plt.show()
+
+merge_ordered() caution, multiple columns
+When using merge_ordered() to merge on multiple columns, the order is important when you combine it with the forward fill feature. The function sorts the merge on columns in the order provided. In this exercise, we will merge GDP and population data from the World Bank for Australia and Sweden, reversing the order of the merge on columns. The frequency of the series are different, the GDP values are quarterly, and the population is yearly. Use the forward fill feature to fill in the missing data. Depending on the order provided, the fill forward will use unintended data to fill in the missing values.
+
+The tables gdp and pop have been loaded.
+
+gdp.head()
+pop.head()
+
+# Merge gdp and pop on date and country with fill and notice rows 2 and 3
+ctry_date = pd.merge_ordered(gdp, pop, on=['date', 'country'],
+                             fill_method='ffill')
+
+# Print ctry_date
+print(ctry_date)
+
+# Merge gdp and pop on country and date with fill
+date_ctry = pd.merge_ordered(gdp, pop, on=['country', 'date'],
+                             fill_method='ffill')
+
+# Print date_ctry
+print(date_ctry)
+
+When you merge on date first, the table is sorted by date then country. When forward fill is applied, Sweden's population value in January is used to fill in the missing values for both Australia and Sweden for the remainder of the year. This is not what you want. The fill forward is using unintended data to fill in the missing values. However, when you merge on country first, the table is sorted by country then date, so the forward fill is applied appropriately in this situation.
+
+Using merge_asof() to study stocks
+You have a feed of stock market prices that you record. You attempt to track the price every five minutes. Still, due to some network latency, the prices you record are roughly every 5 minutes. You pull your price logs for three banks, JP Morgan (JPM), Wells Fargo (WFC), and Bank Of America (BAC). You want to know how the price change of the two other banks compare to JP Morgan. Therefore, you will need to merge these three logs into one table. Afterward, you will use the pandas .diff() method to compute the price change over time. Finally, plot the price changes so you can review your analysis.
+
+The three log files have been loaded for you as tables named jpm, wells, and bac.
+
+jpm.head()
+wells.head()
+bac.head()
+
+# Use merge_asof() to merge jpm and wells
+jpm_wells = pd.merge_asof(jpm, wells, on='date_time', suffixes=('','_wells'), direction='nearest')
+
+print(jpm_wells.head())
+
+# Use merge_asof() to merge jpm_wells and bac
+jpm_wells_bac = pd.merge_asof(jpm_wells, bac, on='date_time', suffixes=('_jpm','_bac'), direction='nearest')
+
+print(jpm_wells_bac.head())
+
+# Compute price diff
+price_diffs = jpm_wells_bac.diff()
+
+print(price_diffs.head())
+
+# Plot the price diff of the close of jpm, wells and bac only
+price_diffs.plot(y=['close_jpm', 'close_wells', 'close_bac'])
+plt.show()
+
+The critical point here is that the merge_asof() function is very useful in performing the fuzzy matching between the timestamps of all the tables.
