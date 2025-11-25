@@ -470,3 +470,38 @@ popular_classic = classic_18_19[classic_18_19['tid'].isin(classic_pop['tid'])]
 
 # Print popular chart
 print(popular_classic)
+
+Correlation between GDP and S&P500
+In this exercise, you want to analyze stock returns from the S&P 500. You believe there may be a relationship between the returns of the S&P 500 and the GDP of the US. Merge the different datasets together to compute the correlation.
+
+Two tables have been provided for you, named sp500, and gdp. As always, pandas has been imported for you as pd.
+
+# Use merge_ordered() to merge gdp and sp500 on year and date
+gdp_sp500 = pd.merge_ordered(gdp, sp500, left_on='year', right_on='date', 
+                             how='left')
+
+# Print gdp_sp500
+print(gdp_sp500)
+
+# Use merge_ordered() to merge gdp and sp500, and forward fill missing values
+gdp_sp500 = pd.merge_ordered(gdp, sp500, left_on='year', right_on='date', 
+                             how='left', fill_method='ffill')
+
+
+# Print gdp_sp500
+print (gdp_sp500)
+
+# Use merge_ordered() to merge gdp and sp500, and forward fill missing values
+gdp_sp500 = pd.merge_ordered(gdp, sp500, left_on='year', right_on='date', 
+                             how='left',  fill_method='ffill')
+
+print(gdp_sp500.head())
+
+
+# Subset the gdp and returns columns
+gdp_returns = gdp_sp500.loc[:, ['gdp', 'returns']]
+
+# Print gdp_returns correlation
+print(gdp_returns.corr())
+
+By using this function, you were able to fill in the missing data from 2019. Finally, the correlation of 0.21 between the GDP and S&P500 is low to moderate at best. You may want to find another predictor if you plan to play in the stock market.
