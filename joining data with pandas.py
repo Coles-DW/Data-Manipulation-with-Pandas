@@ -641,3 +641,23 @@ recent_gdp_pop.plot(rot=90)
 plt.show()
 
 You can see from the plot that the per capita GDP of Australia passed Sweden in 1992. By using the .query() method, you were able to select the appropriate rows easily. The .query() method is easy to read and straightforward.
+
+ur_wide.head()
+
+# unpivot everything besides the year column
+ur_tall = ur_wide.melt(id_vars=['year'], var_name='month', value_name='unempl_rate')
+
+# Check the first few rows to ensure the 'date' column is correct
+print(ur_tall.head())
+
+# Ensure the 'date' column is in the correct format
+ur_tall['date'] = pd.to_datetime(ur_tall['year'] + '-' + ur_tall['month'])
+print(ur_tall.head())
+
+# Sort ur_tall by date in ascending order
+ur_sorted = ur_tall.sort_values(by='date')
+
+# Plot the unempl_rate by date
+ur_sorted.plot(x='date', y='unempl_rate')
+plt.show()
+
