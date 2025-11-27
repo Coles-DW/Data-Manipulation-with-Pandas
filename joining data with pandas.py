@@ -642,6 +642,13 @@ plt.show()
 
 You can see from the plot that the per capita GDP of Australia passed Sweden in 1992. By using the .query() method, you were able to select the appropriate rows easily. The .query() method is easy to read and straightforward.
 
+
+Using .melt() to reshape government data
+The US Bureau of Labor Statistics (BLS) often provides data series in an easy-to-read format - it has a separate column for each month, and each year is a different row. Unfortunately, this wide format makes it difficult to plot this information over time. In this exercise, you will reshape a table of US unemployment rate data from the BLS into a form you can plot using .melt(). You will need to add a date column to the table and sort by it to plot the data correctly.
+
+The unemployment rate data has been loaded for you in a table called ur_wide. You are encouraged to explore this table before beginning the exercise.
+
+
 ur_wide.head()
 
 # unpivot everything besides the year column
@@ -660,4 +667,3 @@ ur_sorted = ur_tall.sort_values(by='date')
 # Plot the unempl_rate by date
 ur_sorted.plot(x='date', y='unempl_rate')
 plt.show()
-
